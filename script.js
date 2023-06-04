@@ -1,191 +1,96 @@
-// Task Manager
-const taskInput = document.getElementById("task-input");
-const addTaskBtn = document.getElementById("add-task-btn");
-const taskList = document.getElementById("task-list");
-const finishedList = document.getElementById("finished-list");
-const settingsBtn = document.getElementById("settings-btn");
-const settingsPopup = document.getElementById("settings-popup");
-const closeSettingsBtn = document.getElementById("close-settings-btn");
-const soundToggle = document.getElementById("sound-toggle");
+// Cache the task list element
+const taskList = document.getElementById('taskList');
 
-// Check if localStorage is available
-const isLocalStorageAvailable = () => {
-  try {
-    const key = "__storage_test__";
-    localStorage.setItem(key, key);
-    localStorage.removeItem(key);
-    return true;
-  } catch (e) {
-    return false;
+// Load tasks from local storage
+function loadTasks() {
+  const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+  for (const task of tasks) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span onclick="toggleTask(this)">☐</span>${task.text}`;
+
+    if (task.completed) {
+      li.classList.add('done');
+      li.firstChild.innerHTML = '✔';
+    }
+
+    taskList.insertBefore(li, taskList.firstChild);
   }
-};
+}
 
-// Retrieve tasks from localStorage
-const getTasksFromStorage = () => {
-  if (isLocalStorageAvailable()) {
-    const tasks = localStorage.getItem("tasks");
-    return tasks ? JSON.parse(tasks) : [];
+// Save tasks to local storage
+function saveTasks() {
+  const tasks = [];
+
+  for (const li of taskList.children) {
+    const task = {
+      text: li.textContent.trim(),
+      completed: li.classList.contains('done')
+    };
+    tasks.push(task);
   }
-  return [];
-};
 
-// Save tasks to localStorage
-const saveTasksToStorage = (tasks) => {
-  if (isLocalStorageAvailable()) {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }
-};
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
 
-// Retrieve task status from localStorage
-const getTaskStatusFromStorage = () => {
-  if (isLocalStorageAvailable()) {
-    const taskStatus = localStorage.getItem("taskStatus");
-    return taskStatus ? JSON.parse(taskStatus) : [];
-  }
-  return [];
-};
-
-// Save task status to localStorage
-const saveTaskStatusToStorage = (taskStatus) => {
-  if (isLocalStorageAvailable()) {
-    localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
-  }
-};
-
-// Retrieve settings from localStorage
-const getSettingsFromStorage = () => {
-  if (isLocalStorageAvailable()) {
-    const settings = localStorage.getItem("settings");
-    return settings ? JSON.parse(settings) : { sound: false };
-  }
-  return { sound: false };
-};
-
-// Save settings to localStorage
-const saveSettingsToStorage = (settings) => {
-  if (isLocalStorageAvailable()) {
-    localStorage.setItem("settings", JSON.stringify(settings));
-  }
-};
-
-// Initialize tasks array, task status, and settings
-let tasks = getTasksFromStorage();
-let taskStatus = getTaskStatusFromStorage();
-let settings = getSettingsFromStorage();
-
-// Function to create a new task item
-const createTaskItem = (task) => {
-  const taskItem = document.createElement("li");
-  taskItem.className = "task-item";
-  taskItem.innerHTML = `
-    <input type="checkbox" class="task-checkbox">
-    <span class="task-text">${task}</span>
-    <div class="task-actions">
-      <button class="edit-button">Edit</button>
-      <button class="delete-button">Delete</button>
-    </div>
-  `;
-  return taskItem;
-};
-
-// Function to add a new task
-const addTask = () => {
+// Add a task to the list
+function addTask() {
+  const taskInput = document.getElementById('taskInput');
   const taskText = taskInput.value.trim();
-  if (taskText !== "") {
-    const taskItem = createTaskItem(taskText);
-    taskList.appendChild(taskItem);
-    tasks.push(taskText);
-    taskStatus.push(false); // Add task status as false (not finished)
-    saveTasksToStorage(tasks);
-    saveTaskStatusToStorage(taskStatus);
-    taskInput.value = "";
+
+  if (taskText !== '') {
+    const li = document.createElement('li');
+    li.innerHTML = `<span onclick="toggleTask(this)">☐</span>${taskText}`;
+    taskList.insertBefore(li, taskList.firstChild); // Add new task to the top of the list
+    taskInput.value = '';
+
+    saveTasks(); // Save tasks to local storage
   }
-};
+}
 
-// Event listener for adding a task
-addTaskBtn.addEventListener("click", addTask);
+// Toggle the task completion
+function toggleTask(span) {
+  const li = span.parentNode;
+  li.classList.toggle('done');
 
-// Event listener for Enter key to add a task
-taskInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
+  if (li.classList.contains('done')) {
+    span.innerHTML = '✔';
+  } else {
+    span.innerHTML = '☐';
+  }
+
+  saveTasks(); // Save tasks to local storage
+
+  // Play sound effect
+  const audio = new Audio('task-done.mp3');
+  audio.play();
+}
+
+// Clear all tasks
+function clearTasks() {
+  const confirmation = confirm('Are you sure you want to clear all tasks?');
+
+  if (confirmation) {
+    taskList.innerHTML = ''; // Clear all tasks from the list
+    localStorage.removeItem('tasks'); // Remove tasks from local storage
+  }
+}
+
+// Load tasks on page load
+window.addEventListener('load', loadTasks);
+
+// Add task button click event
+const addTaskButton = document.getElementById('addTaskButton');
+addTaskButton.addEventListener('click', addTask);
+
+// Handle enter key press on task input
+const taskInput = document.getElementById('taskInput');
+taskInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
     addTask();
   }
 });
 
-// Function to handle task completion
-// Function to handle task completion
-const completeTask = (taskItem, index) => {
-  taskList.removeChild(taskItem);
-  finishedList.appendChild(taskItem);
-  taskStatus[index] = true; // Set task status as true (finished)
-  saveTaskStatusToStorage(taskStatus);
-
-  if (settings.sound) {
-    const audio = new Audio("check.mp3"); // Replace "check.mp3" with the path to your sound file
-    audio.play();
-  }
-};
-
-// Event listener for task completion
-taskList.addEventListener("change", (event) => {
-  if (event.target.matches(".task-checkbox")) {
-    const taskItem = event.target.closest(".task-item");
-    const index = Array.from(taskList.children).indexOf(taskItem);
-    completeTask(taskItem, index);
-  }
-});
-
-// Function to delete a task
-const deleteTask = (taskItem, index) => {
-  tasks.splice(index, 1);
-  taskStatus.splice(index, 1);
-  saveTasksToStorage(tasks);
-  saveTaskStatusToStorage(taskStatus);
-  taskItem.remove();
-};
-
-// Event listener for deleting a task
-taskList.addEventListener("click", (event) => {
-  if (event.target.matches(".delete-button")) {
-    const taskItem = event.target.closest(".task-item");
-    const index = Array.from(taskList.children).indexOf(taskItem);
-    deleteTask(taskItem, index);
-  }
-});
-
-// Function to open settings popup
-const openSettingsPopup = () => {
-  settingsPopup.style.display = "flex";
-};
-
-// Event listener for opening settings popup
-settingsBtn.addEventListener("click", openSettingsPopup);
-
-// Function to close settings popup
-const closeSettingsPopup = () => {
-  settingsPopup.style.display = "none";
-};
-
-// Event listener for closing settings popup
-closeSettingsBtn.addEventListener("click", closeSettingsPopup);
-
-// Function to handle sound toggle
-const toggleSound = () => {
-  settings.sound = soundToggle.checked;
-  saveSettingsToStorage(settings);
-};
-
-// Event listener for sound toggle
-soundToggle.addEventListener("change", toggleSound);
-
-// Initialize sound toggle state from settings
-soundToggle.checked = settings.sound;
-
-// Initialize tasks and task status from storage
-tasks.forEach((task, index) => {
-  const taskItem = createTaskItem(task);
-  taskList.appendChild(taskItem);
-  if (taskStatus[index]) {
-    completeTask(taskItem, index);
-  }
-});
+// Clear tasks button click event
+const clearTasksButton = document.getElementById('clearTasksButton');
+clearTasksButton.addEventListener('click', clearTasks);
