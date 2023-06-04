@@ -291,3 +291,20 @@ input:checked + .slider:before {
 .settings-content.dark-mode .slider:before {
   background-color: #fff;
 }
+
+.footer {
+  background-color: #f2f2f2;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-content a {
+  color: #2196f3;
+  text-decoration: none;
+}
+
+.footer-content a:hover {
+  text-decoration: underline;
+}
