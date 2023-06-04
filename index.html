@@ -1,58 +1,68 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>DazCheck - To-Do List</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>DazCheck | Check with Confidence</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="container">
-    <h1>DazCheck - To-Do List</h1>
+    <h1>DazCheck | Check with Confidence</h1>
+
     <div id="task-container">
-      <input type="text" id="task-input" placeholder="Add a new task...">
+      <input type="text" id="task-input" placeholder="Enter task...">
       <button id="add-task-btn">Add Task</button>
     </div>
+
     <div class="lists-container">
       <div class="task-list-container">
         <h2>Tasks</h2>
-        <ul id="task-list" class="task-list"></ul>
+        <ul class="task-list" id="task-list">
+          <!-- Tasks will be dynamically added here -->
+        </ul>
       </div>
       <div class="task-list-container">
-        <h2>Finished Tasks</h2>
-        <ul id="finished-tasks-list" class="task-list"></ul>
+        <h2>Finished</h2>
+        <ul class="task-list" id="finished-list">
+          <!-- Finished tasks will be dynamically added here -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="#" id="settings-btn">Settings</a>
+    </div>
+
+    <div class="settings-popup" id="settings-popup">
+      <div class="settings-content">
+        <h3>Settings</h3>
+        <div class="settings-item">
+          <label for="sound-toggle">Sound Effect</label>
+          <label class="switch">
+            <input type="checkbox" id="sound-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <label for="cache-toggle">Cache Tasks</label>
+          <label class="switch">
+            <input type="checkbox" id="cache-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button id="close-settings-btn">Close</button>
       </div>
     </div>
   </div>
 
   <footer class="footer">
-    <p>&copy; 2023 DazCheck. Developed by <a href="https://zigaow.com" target="_blank">Zigao Wang</a>.</p>
-  </footer>
-
-  <div class="settings-popup" id="settings-popup">
-    <div class="settings-content">
-      <h3>Settings</h3>
-      <div class="settings-item">
-        <label for="dark-mode-toggle">Dark Mode:</label>
-        <label class="switch">
-          <input type="checkbox" id="dark-mode-toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="settings-item">
-        <label for="sound-toggle">Check Sound:</label>
-        <label class="switch">
-          <input type="checkbox" id="sound-toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="settings-item">
-        <button id="clear-all-btn">Clear All Tasks</button>
-      </div>
-      <div class="settings-item">
-        <button id="save-settings-btn">Save</button>
-      </div>
+    <div class="footer-content">
+      &copy; 2023 <a target="_blank" href="https://zigaow.com">Zigao Wang</a>. All rights reserved.
     </div>
-  </div>
+  </footer>  
 
   <script src="script.js"></script>
 </body>
+
 </html>
