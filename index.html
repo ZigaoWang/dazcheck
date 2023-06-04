@@ -1,66 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>DazCheck | Check with Confidence</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dazcheck - Todo List</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="container">
-    <h1>DazCheck | Check with Confidence</h1>
-
-    <div id="task-container">
-      <input type="text" id="task-input" placeholder="Enter task...">
-      <button id="add-task-btn">Add Task</button>
+    <h1>Dazcheck - Todo List</h1>
+    <div class="input-container">
+      <input type="text" id="taskInput" placeholder="Enter a task...">
+      <button id="addTaskButton">Add Task</button>
     </div>
-
-    <div class="lists-container">
-      <div class="task-list-container">
-        <h2>Tasks</h2>
-        <ul class="task-list" id="task-list">
-          <!-- Tasks will be dynamically added here -->
-        </ul>
-      </div>
-      <div class="task-list-container">
-        <h2>Finished</h2>
-        <ul class="task-list" id="finished-list">
-          <!-- Finished tasks will be dynamically added here -->
-        </ul>
-      </div>
-    </div>
-
-    <div class="footer">
-      <a href="#" id="settings-btn">Settings</a>
-    </div>
-
-    <div class="settings-popup" id="settings-popup">
-      <div class="settings-content">
-        <h3>Settings</h3>
-        <div class="settings-item">
-          <label for="sound-toggle">Sound Effect</label>
-          <label class="switch">
-            <input type="checkbox" id="sound-toggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div class="settings-item">
-          <label for="cache-toggle">Cache Tasks</label>
-          <label class="switch">
-            <input type="checkbox" id="cache-toggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button id="close-settings-btn">Close</button>
-      </div>
-    </div>
+    <ul id="taskList"></ul>
+    <button id="clearTasksButton">Clear All Tasks</button>
   </div>
-
-  <footer class="footer">
-    <div class="footer-content">
-      &copy; 2023 <a target="_blank" href="https://zigaow.com">Zigao Wang</a>. All rights reserved.
-    </div>
-  </footer>  
 
   <script src="script.js"></script>
 </body>
