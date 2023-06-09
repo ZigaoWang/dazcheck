@@ -1,20 +1,40 @@
 // Cache the task list element
 const taskList = document.getElementById('taskList');
 
-// Load tasks from local storage
 function loadTasks() {
   const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
+  taskList.innerHTML = '';
+
   for (const task of tasks) {
     const li = document.createElement('li');
-    li.innerHTML = `<span onclick="toggleTask(this)">☐</span>${task.text}`;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.addEventListener('change', toggleTask);
+    checkbox.checked = task.completed;
+
+    const span = document.createElement('span');
+    span.textContent = task.text;
+
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.addEventListener('click', () => editTask(li, span));
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => deleteTask(li));
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    li.appendChild(editButton);
+    li.appendChild(deleteButton);
+
+    taskList.appendChild(li);
 
     if (task.completed) {
       li.classList.add('done');
-      li.firstChild.innerHTML = '✔';
+      span.style.textDecoration = 'line-through';
     }
-
-    taskList.insertBefore(li, taskList.firstChild);
   }
 }
 
@@ -23,9 +43,12 @@ function saveTasks() {
   const tasks = [];
 
   for (const li of taskList.children) {
+    const checkbox = li.querySelector('input[type="checkbox"]');
+    const span = li.querySelector('span');
+
     const task = {
-      text: li.textContent.trim(),
-      completed: li.classList.contains('done')
+      text: span.textContent.trim(),
+      completed: checkbox.checked
     };
     tasks.push(task);
   }
@@ -40,7 +63,15 @@ function addTask() {
 
   if (taskText !== '') {
     const li = document.createElement('li');
-    li.innerHTML = `<span onclick="toggleTask(this)">☐</span>${taskText}`;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.addEventListener('change', toggleTask);
+
+    const span = document.createElement('span');
+    span.textContent = taskText;
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
     taskList.insertBefore(li, taskList.firstChild); // Add new task to the top of the list
     taskInput.value = '';
 
@@ -49,21 +80,18 @@ function addTask() {
 }
 
 // Toggle the task completion
-function toggleTask(span) {
-  const li = span.parentNode;
+function toggleTask(event) {
+  const checkbox = event.target;
+  const li = checkbox.parentNode;
+
   li.classList.toggle('done');
-
-  if (li.classList.contains('done')) {
-    span.innerHTML = '✔';
-  } else {
-    span.innerHTML = '☐';
-  }
-
   saveTasks(); // Save tasks to local storage
 
-  // Play sound effect
-  const audio = new Audio('task-done.mp3');
-  audio.play();
+  if (checkbox.checked) {
+    // Play sound effect only when the task is checked (finished)
+    const audio = new Audio('task-done.mp3');
+    audio.play();
+  }
 }
 
 // Clear all tasks
@@ -94,3 +122,23 @@ taskInput.addEventListener('keydown', (event) => {
 // Clear tasks button click event
 const clearTasksButton = document.getElementById('clearTasksButton');
 clearTasksButton.addEventListener('click', clearTasks);
+
+// Edit the task
+function editTask(li, span) {
+  const newText = prompt('Edit the task:', span.textContent.trim());
+
+  if (newText !== null && newText.trim() !== '') {
+    span.textContent = newText.trim();
+    saveTasks();
+  }
+}
+
+// Delete the task
+function deleteTask(li) {
+  const confirmation = confirm('Are you sure you want to delete this task?');
+
+  if (confirmation) {
+    li.remove();
+    saveTasks();
+  }
+}
