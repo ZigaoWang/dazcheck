@@ -6,19 +6,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 .container {
-  max-width: 600px;
   background-color: #fff;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 300px;
+  max-width: calc(100vw - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 80vh;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
+.logo {
+  margin-bottom: 20px;
+}
+
+.logo img {
+  max-width: 100px;
+  height: auto;
+  border-radius: 22px;
 }
 
 .input-container {
@@ -31,9 +43,12 @@ h1 {
 input[type="text"] {
   flex: 1;
   padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 
-button {
+button#addTaskButton {
   padding: 10px;
   background-color: #4caf50;
   color: #fff;
@@ -41,7 +56,12 @@ button {
   cursor: pointer;
 }
 
-ul {
+.task-list-container {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+#taskList {
   list-style-type: none;
   padding: 0;
 }
@@ -53,6 +73,7 @@ li {
   border-radius: 5px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 li.done {
@@ -64,21 +85,35 @@ li span {
   margin-right: 10px;
   cursor: pointer;
   font-size: 20px;
+  flex-grow: 1;
+  text-align: left;
+}
+
+li button {
+  padding: 5px;
+  margin-left: 5px;
+  background-color: #ccc;
+  border: none;
+  cursor: pointer;
+}
+
+li button:hover {
+  background-color: #bbb;
 }
 
 button#clearTasksButton {
-  display: block;
   margin-top: 10px;
+  padding: 10px;
   background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
   padding: 10px 0;
   text-align: center;
+  background-color: #f2f2f2;
 }
 
 .footer p {
