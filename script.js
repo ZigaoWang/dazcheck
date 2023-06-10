@@ -58,35 +58,86 @@ function createTaskElement(id, taskText, completed = false) {
     toggleEditMode(li);
   });
 
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = taskText;
+  input.addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      handleTaskEdit(li);
+    }
+  });
+
   li.appendChild(checkbox);
   li.appendChild(span);
+  li.appendChild(input);
 
   return li;
 }
 
 // Function to toggle between view mode and edit mode
 function toggleEditMode(li) {
-  li.classList.toggle('edit-mode');
   const span = li.querySelector('span');
   const input = li.querySelector('input[type="text"]');
-  if (li.classList.contains('edit-mode')) {
-    span.style.display = 'none';
-    input.style.display = 'block';
+  const originalText = span.textContent;
+
+  if (!li.classList.contains('edit-mode')) {
+    li.classList.add('edit-mode');
+    input.value = originalText;
     input.focus();
-    input.setSelectionRange(input.value.length, input.value.length);
+    input.setSelectionRange(0, input.value.length);
+
+    const handleEnterKeyPress = function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        input.blur();
+      }
+    };
+
+    const handleOutsideClick = function (event) {
+      if (!li.contains(event.target)) {
+        input.blur();
+      }
+    };
+
+    input.addEventListener('keypress', handleEnterKeyPress);
+    document.addEventListener('click', handleOutsideClick);
   } else {
+    const taskText = input.value.trim();
+    if (taskText === '') {
+      li.remove();
+      deleteTask(li, li.dataset.id);
+    } else {
+      span.textContent = taskText;
+      updateTask(li, li.dataset.id, taskText);
+    }
+    li.classList.remove('edit-mode');
     span.style.display = 'inline';
     input.style.display = 'none';
 
-    const taskList = getCachedTaskList();
-    const taskId = li.dataset.id;
-    const task = taskList.find((task) => task.id === taskId);
-    if (task) {
-      task.text = input.value.trim();
-      span.textContent = task.text;
-      saveTaskListToCache(taskList);
-    }
+    document.removeEventListener('click', handleOutsideClick);
   }
+}
+
+// Function to delete a task
+function deleteTask(li, taskId) {
+  const taskList = getCachedTaskList();
+  const updatedTaskList = taskList.filter((task) => task.id !== taskId);
+  saveTaskListToCache(updatedTaskList);
+  li.remove();
+}
+
+// Function to update a task
+function updateTask(li, taskId, taskText) {
+  const taskList = getCachedTaskList();
+  const updatedTaskList = taskList.map((task) => {
+    if (task.id === taskId) {
+      return { ...task, text: taskText };
+    }
+    return task;
+  });
+  saveTaskListToCache(updatedTaskList);
+  const span = li.querySelector('span');
+  span.textContent = taskText;
 }
 
 // Function to handle task editing
@@ -171,73 +222,152 @@ function handleKeyPress(event) {
   }
 }
 
-// Array of quotes
-const quotes = [
-  "Believe you can and you're halfway there. - Theodore Roosevelt",
-  "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
-  "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
-  "The only way to do great work is to love what you do. - Steve Jobs",
-  "Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill",
-];
-
-// Function to get a random quote
+// Function to generate a random quote
 function getRandomQuote() {
+  // Array of quotes
+  const quotes = [
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful. - Albert Schweitzer",
+    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+    "Believe you can and you're halfway there. - Theodore Roosevelt",
+    "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+    "The best time to plant a tree was 20 years ago. The second best time is now. - Chinese Proverb",
+    "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle. - Christian D. Larson",
+    "The only limit to our realization of tomorrow will be our doubts of today. - Franklin D. Roosevelt",
+    "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the only way to do great work is to love what you do. - Steve Jobs",
+    "The future depends on what you do today. - Mahatma Gandhi",
+    "The journey of a thousand miles begins with one step. - Lao Tzu",
+    "You don't have to be great to start, but you have to start to be great. - Zig Ziglar",
+    "The secret of getting ahead is getting started. - Mark Twain",
+    "You miss 100% of the shots you don't take. - Wayne Gretzky",
+    "Dream big and dare to fail. - Norman Vaughan",
+    "The only person you are destined to become is the person you decide to be. - Ralph Waldo Emerson",
+    "Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill",
+    "The biggest risk is not taking any risk. In a world that is changing quickly, the only strategy that is guaranteed to fail is not taking risks. - Mark Zuckerberg",
+    "I find that the harder I work, the more luck I seem to have. - Thomas Jefferson",
+    "Success usually comes to those who are too busy to be looking for it. - Henry David Thoreau",
+    "Do not wait for opportunity. Create it. - George Bernard Shaw",
+    "The only way to do great work is to love what you do. - Steve Jobs",
+  ];
   const randomIndex = Math.floor(Math.random() * quotes.length);
   return quotes[randomIndex];
 }
 
-// Print the task list
+// Function to print the task list
 function printTasks() {
-  const printContent = document.getElementById('taskList').innerHTML;
+  const taskListContainer = document.getElementById('taskList');
+  const printContent = taskListContainer.cloneNode(true); // Clone the task list container
+
+  // Remove input elements from the cloned task list container
+  const inputElements = printContent.querySelectorAll('input[type="text"]');
+  inputElements.forEach((input) => {
+    input.parentNode.removeChild(input);
+  });
+
+  const randomQuote = getRandomQuote();
+
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
   const printWindow = window.open('', '_blank');
   printWindow.document.write(`
     <html>
     <head>
-      <title>Print Tasks</title>
       <style>
         body {
-          font-family: Arial, sans-serif;
-        }
-        
-        .task-list-header {
+          color: #333;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           text-align: center;
+          padding: 20px;
+        }
+
+        h1 {
+          color: #555;
+          font-size: 40px;
+          margin-bottom: 30px;
+        }
+
+        p {
           font-size: 24px;
           margin-bottom: 20px;
-          color: #FF6B6B;
         }
-        
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          text-align: left;
+        }
+
+        li {
+          margin-bottom: 20px;
+          font-size: 26px;
+          background-color: #FFCDD2; /* Red */
+          padding: 10px;
+          border-radius: 5px;
+        }
+
         .task-item {
           display: flex;
           align-items: center;
-          margin-bottom: 10px;
         }
-        
+
         .checkbox {
-          width: 30px;
-          height: 30px;
-          background-color: #FFC0CB;
           margin-right: 10px;
         }
-        
+
         .task-text {
-          font-size: 18px;
-          color: #FF9F80;
+          flex-grow: 1;
+          font-size: 30px;
         }
-        
-        .quote {
-          margin-top: 20px;
-          font-style: italic;
+
+        .done {
+          text-decoration: line-through;
+        }
+
+        .footer {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          background-color: #C8E6C9; /* Green */
+          padding: 10px;
+          font-size: 16px;
+          color: #555;
           text-align: center;
-          color: #888;
-          font-size: 14px;
+        }
+
+        .footer a {
+          color: #555;
+          text-decoration: none;
+        }
+
+        .footer a:hover {
+          text-decoration: underline;
+        }
+
+        .quote {
+          font-style: italic;
+          font-size: 18px;
+          margin-top: 20px;
+        }
+
+        .task-list-title {
+          font-size: 36px;
+          margin-bottom: 10px;
         }
       </style>
     </head>
     <body>
-      <h1 class="task-list-header">Task List</h1>
-      ${printContent}
-      <div class="quote">
-        <p>${getRandomQuote()}</p>
+      <h1 class="task-list-title">Task List</h1>
+      <p>${currentDate}</p>
+      ${printContent.innerHTML}
+      <div class="footer">
+        <p class="quote">${randomQuote}</p>
+        <p style="font-size: 14px; font-style: italic;">DazCheck &copy; 2023 | Made with <span class="heart">&hearts;</span> by <a href="https://zigaow.com" target="_blank">Zigao Wang</a></p>
       </div>
     </body>
     </html>
@@ -246,21 +376,9 @@ function printTasks() {
   printWindow.print();
 }
 
-// Add event listener to the "Add Task" button
-const addTaskButton = document.getElementById('addTaskButton');
-addTaskButton.addEventListener('click', addTask);
-
-// Add event listener to the "Print Tasks" button
-const printTasksButton = document.getElementById('printTasksButton');
-printTasksButton.addEventListener('click', printTasks);
-
-// Add event listener to the "Clear Tasks" button
-const clearTasksButton = document.getElementById('clearTasksButton');
-clearTasksButton.addEventListener('click', clearTasks);
-
-// Add event listener for key press events on the task input
-const taskInput = document.getElementById('taskInput');
-taskInput.addEventListener('keypress', handleKeyPress);
-
-// Render the task list from the cached data on page load
-renderTaskListFromCache();
+// Event listeners
+document.addEventListener('DOMContentLoaded', renderTaskListFromCache);
+document.getElementById('addTaskButton').addEventListener('click', addTask);
+document.getElementById('clearTasksButton').addEventListener('click', clearTasks);
+document.getElementById('printTasksButton').addEventListener('click', printTasks);
+document.getElementById('taskInput').addEventListener('keypress', handleKeyPress);
