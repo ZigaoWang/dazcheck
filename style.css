@@ -89,6 +89,23 @@ li span {
   text-align: left;
 }
 
+li input[type="text"] {
+  display: none;
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+li.edit-mode span {
+  display: none;
+}
+
+li.edit-mode input[type="text"] {
+  display: block;
+}
+
 li button {
   padding: 5px;
   margin-left: 5px;
@@ -105,6 +122,16 @@ button#clearTasksButton {
   margin-top: 10px;
   padding: 10px;
   background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button#printTasksButton {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #4caf50;
   color: #fff;
   border: none;
   cursor: pointer;
