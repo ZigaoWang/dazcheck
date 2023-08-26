@@ -1,4 +1,3 @@
 # DazCheck
-
-Install it via Chrome Web Store:
-https://chrome.google.com/webstore/detail/dazcheck/jhkglpiffjbeanebmbbceoajfinekgom
+## A to-do list chrome extension
+To install DazChrono, simply install it through [Chrome Web Store](https://chrome.google.com/webstore/detail/dazcheck/jhkglpiffjbeanebmbbceoajfinekgom).
