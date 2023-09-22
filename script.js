@@ -292,7 +292,7 @@ function printTasks() {
 
         p {
           font-size: 24px;
-          margin-bottom: 20px;
+          margin-bottom: 8px;
         }
 
         ul {
@@ -303,7 +303,7 @@ function printTasks() {
         }
 
         li {
-          margin-bottom: 5px;
+          margin-bottom: 8px;
           font-size: 26px;
           background-color: #FFCDD2; /* Red */
           padding: 10px;
@@ -317,6 +317,8 @@ function printTasks() {
 
         .checkbox {
           margin-right: 10px;
+          height: 20px;
+          width: 20px;
         }
 
         .task-text {
