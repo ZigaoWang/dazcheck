@@ -303,7 +303,7 @@ function printTasks() {
         }
 
         li {
-          margin-bottom: 20px;
+          margin-bottom: 5px;
           font-size: 26px;
           background-color: #FFCDD2; /* Red */
           padding: 10px;
